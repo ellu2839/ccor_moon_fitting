@@ -57,8 +57,6 @@ def get_body_distance(date, body1, body2):
 
     return distance.to(u.AU)
 
-
-
 def detect_moon_edges(fits_file, ext=1, sigma1=3, sigma2=15, canny_low=0, canny_high=300):
     img_data = fits.getdata(fits_file, ext)
     img_data = np.nan_to_num(img_data, nan=0.0, posinf=np.max(img_data), neginf=np.min(img_data))
@@ -87,7 +85,7 @@ def find_moon(edges, max_radius=60, min_radius=30):
     structures = []
     filtered_contours = []
 
-    # only look for contours between 30-60pix, otherwise it'll pick up pylon stuff
+    # only look for smaller contours, otherwise it'll pick up pylon
     for contour in contours:
         (x, y), radius = cv2.minEnclosingCircle(contour)
         if min_radius <= radius <= max_radius:
@@ -367,7 +365,7 @@ def create_mp4_from_images(directory, output_filename, original_fps=24, desired_
     first_image = cv2.imread(image_files[0])
     height, width, _ = first_image.shape
     size = (width, height)
-    
+
     # get the video writer
     output_path = os.path.join(directory, output_filename)
     fourcc = cv2.VideoWriter_fourcc(*'mpv4')  # Codec for MP4
