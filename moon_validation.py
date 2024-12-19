@@ -363,23 +363,25 @@ def create_mp4_from_images(directory, output_filename, original_fps=24, desired_
 
     # read an image to determine size for saving
     first_image = cv2.imread(image_files[0])
-    height, width, _ = first_image.shape
+    height, width, layers = first_image.shape
     size = (width, height)
 
     # get the video writer
     output_path = os.path.join(directory, output_filename)
-    fourcc = cv2.VideoWriter_fourcc(*'mpv4')  # Codec for MP4
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Codec for MP4
     video_writer = cv2.VideoWriter(output_path, fourcc, original_fps, size)
 
     # add repeated frames to slow down effective fps
     for file in image_files:
         image = cv2.imread(file)
-        for k in range(repeat_factor):
+        if image.shape[:2] != (height, width):  # Resize if needed
+            image = cv2.resize(image, size)
+        for _ in range(repeat_factor):
             video_writer.write(image)
 
     video_writer.release()
     print(f"MP4 created: {output_path}")
 
 
-create_mp4_from_images("/Users/elysia.lucas/Data/CCOR/ccor_smn_images", "/Users/elysia.lucas/Data/CCOR/ccor_moon_validation_newparams_small.mp4")
+create_mp4_from_images("/Users/elysia.lucas/Data/CCOR/ccor_smn_images", "/Users/elysia.lucas/Data/CCOR/ccor_moon_validation_newparams_newsmall.mp4")
 
